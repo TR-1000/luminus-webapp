@@ -24,7 +24,7 @@ pipeline {
         stage('Run Container') {
             steps {
                 echo 'Starting container'
-                sh 'docker run --rm -d -p 3000:3000 193332868148.dkr.ecr.us-east-2.amazonaws.com/example-webapp:$(git rev-parse HEAD)'
+                sh 'docker run --rm -d -p 3000:3000 193332868148.dkr.ecr.us-east-2.amazonaws.com/example-webapp:latest'
             }
         }
 
