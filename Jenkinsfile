@@ -60,7 +60,7 @@ pipeline {
         stage('Run Container') {
             steps {
                 echo 'Starting container'
-                sh 'docker run --rm -v "$PWD:/work" 193332868148.dkr.ecr.us-east-2.amazonaws.com/example-webapp-builder:$(git rev-parse HEAD) bash -c "cd /work; lein uberjar" '
+                sh 'docker run --rm -d -p 3000:3000 193332868148.dkr.ecr.us-east-2.amazonaws.com/example-webapp:${GIT_COMMIT_HASH}'
             }
         }
     }
