@@ -61,18 +61,21 @@ pipeline {
             }
         }
 
-        stage('Restart Docker') {
+        stage('Deploy Container') {
             steps {
                 echo 'Restarting Docker'
-                sh 'sudo service docker restart'
+                script {
+                    try {
+                        sh 'docker kill $(docker ps -q)'
+                    } catch (Exception e) {
+                        echo 'No containers are running'
+                    } finally {
+                        echo 'Starting container'
+                        sh 'docker run --rm -d -p 3000:3000 193332868148.dkr.ecr.us-east-2.amazonaws.com/example-webapp:$(git rev-parse HEAD)'
+                    }
+                }
             }
         }
-
-        stage('Run Container') {
-            steps {
-                echo 'Starting container'
-                sh 'docker run --rm -d -p 3000:3000 193332868148.dkr.ecr.us-east-2.amazonaws.com/example-webapp:$(git rev-parse HEAD)'
-            }
-        }
+        
     }
 }
