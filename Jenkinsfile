@@ -20,20 +20,20 @@ pipeline {
         }
 
         stage('Make A Builder Image') {
-            steps {
-                echo 'Starting to build the project builder docker image'
-                script {
-                    builderImage = docker.build("${ACCOUNT_REGISTRY_PREFIX}/example-webapp-builder:${GIT_COMMIT_HASH}", "-f ./Dockerfile.builder .")
-                    builderImage.push()
-                    builderImage.push("${env.GIT_BRANCH}")
-                    builderImage.inside('-v $WORKSPACE:/output -u root') {
-                        sh """
-                           cd /output
-                           lein uberjar
-                        """
-                    }
-                }
+          steps {
+            echo 'Starting to build the project builder docker image'
+            script {
+              builderImage = docker.build("${ACCOUNT_REGISTRY_PREFIX}/example-webapp-builder:${GIT_COMMIT_HASH}", "-f ./Dockerfile.builder .")
+              builderImage.push()
+              builderImage.push("${env.GIT_BRANCH}")
+              builderImage.inside('-v $WORKSPACE:/output -u root') {
+                  sh """
+                     cd /output
+                     lein uberjar
+                  """
+              }
             }
+          }
         }
 
         stage('Unit Tests') {
@@ -61,13 +61,18 @@ pipeline {
             }
         }
 
+        stage('Restart Docker') {
+            steps {
+                echo 'Restarting Docker'
+                sh 'sudo service docker restart'
+            }
+        }
+
         stage('Run Container') {
             steps {
                 echo 'Starting container'
                 sh 'docker run --rm -d -p 3000:3000 193332868148.dkr.ecr.us-east-2.amazonaws.com/example-webapp:$(git rev-parse HEAD)'
             }
         }
-
-
     }
 }
