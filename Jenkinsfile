@@ -64,7 +64,6 @@ pipeline {
         
         stage('Deploy Container') {
             steps {
-                echo 'Restarting Docker'
                 script {
                     try {
                         sh 'docker kill $(docker ps -q)'
